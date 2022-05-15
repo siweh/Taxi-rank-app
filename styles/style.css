@@ -1,0 +1,27 @@
+body {
+	font-family: arial, sans-serif;
+	background-color: #3FA9E2;
+	font-size: 0.75em;
+	color: white;
+}
+
+table, td, th {
+	border: 2px solid black;
+  }
+  
+  th{
+	border: 2px solid red;
+  }
+  table {
+	border-collapse: collapse;
+	width: 100%;
+	text-align: center;
+}
+
+.add-route{
+	padding: 5px;
+	margin: 5px;
+	font-size:small;
+	background-color: #3fe290;
+	border-radius: 0.3em;
+}
