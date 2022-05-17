@@ -25,7 +25,7 @@
     <!-- :disabled="!routes.routeName.length, !routes.taxiFare.length" -->
     <div
       class="container"
-      x-data="{addRoute: false, addRouteValues: false, leaveQueue: false, city: 'Johannesburg', trip: 'Chiawelo', priceOfTaxi: 13, totalMadeADay: 0, passangerInQueue: 0, passangerInTaxi: 5, numberOfTaxiAvailable: 3, routes: [] }"
+      x-data="{addRoute: false, addRouteValues: false, leaveQueue: false, city: 'Johannesburg', trip: 'Chiawelo', priceOfTaxi: 13, totalMadeADay: 0, passangerInQueue: 0, passangerInTaxi: 5, numberOfTaxiAvailable: 3, totalFareOfTaxi: 0, routes: [] }"
     >
       <div class="row">
         <div class="col-8">
@@ -64,13 +64,13 @@
               <th>Total Fare</th>
               <th>Available Taxi</th>
             </tr>
-              <!-- <tr>
+              <tr>
                 <td><span x-text="city"></span></td>
                 <td><span x-text="trip"></span></td>
                 <td style="align-items: center">
                   <button
                     style="background-color: green; color: white"
-                    @click="passangerInQueue++"
+                    @click="passangerInQueue++, totalFareOfTaxi = priceOfTaxi * passangerInQueue"
                   >
                     +
                   </button>
@@ -81,7 +81,9 @@
                   >
                   <button
                     style="background-color: red; color: white"
-                    @click="passangerInQueue--"
+                    @click="passangerInQueue--,
+                    totalFareOfTaxi -= priceOfTaxi 
+                    "
                   >
                     -
                   </button>
@@ -89,7 +91,10 @@
                 <td>
                   <button
                     :disabled="passangerInQueue < passangerInTaxi"
-                    @click="passangerInQueue-=passangerInTaxi, numberOfTaxiAvailable--"
+                    @click="passangerInQueue-=passangerInTaxi, numberOfTaxiAvailable--,
+                    totalMadeADay += (priceOfTaxi * passangerInTaxi),
+                    totalFareOfTaxi = priceOfTaxi * passangerInQueue
+                    "
                   >
                     leave
                   </button>
@@ -100,17 +105,17 @@
                 </td>
                   <td>
                     <span>R</span>
-                     <template x-if="passangerInQueue > passangerInTaxi"> -->
+                     <!-- <template x-if="passangerInQueue > passangerInTaxi"> -->
                       
-                      <!-- <span x-text="priceOfTaxi*passangerInTaxi"></span>
-                     </template> -->
-                  <!-- </td>
+                      <span x-text="totalFareOfTaxi.toFixed(2)"></span>
+                     <!-- </template> -->
+                  </td>
                 
                 
                 <td>
                   <span x-text="numberOfTaxiAvailable"></span>
                 </td>
-              </tr>  -->
+              </tr>
             <template x-for="route in routes">
               <tr x-show="addRouteValues">
                 <td>
@@ -122,7 +127,8 @@
                 <td style="align-items: center">
                   <button
                     style="background-color: green; color: white"
-                    @click="route.passangersQueue++, route.totalTaxiFare = route.taxiFare * route.passangersQueue"
+                    @click="route.passangersQueue++, 
+                    route.totalTaxiFare = route.taxiFare * route.passangersQueue"
                   >
                     +
                   </button>
