@@ -42,7 +42,7 @@
               <input type="number" placeholder="Taxi far" x-model="routes.taxiFare" />
               <br />
               <button
-                x-on:click="addRouteValues = ! addRouteValues, routes.push({routeName: routes.routeName, taxiFare: routes.taxiFare, numberOfPassengersInTaxi: 0, passangersQueue: 0, numberOfPassengersInTaxi: 10, availableTaxisAtFirst: 3})"
+                x-on:click="addRouteValues = ! addRouteValues, routes.push({routeName: routes.routeName, taxiFare: routes.taxiFare, numberOfPassengersInTaxi: 0, passangersQueue: 0, numberOfPassengersInTaxi: 10, availableTaxisAtFirst: 3, totalTaxiFare: 0})"
                 :disabled="!routes.routeName, !routes.taxiFare"
               >
                 Add
@@ -122,7 +122,7 @@
                 <td style="align-items: center">
                   <button
                     style="background-color: green; color: white"
-                    @click="route.passangersQueue++"
+                    @click="route.passangersQueue++, route.totalTaxiFare = route.taxiFare * route.passangersQueue"
                   >
                     +
                   </button>
@@ -133,7 +133,7 @@
                   >
                   <button
                     style="background-color: red; color: white"
-                    @click="route.passangersQueue--"
+                    @click="route.passangersQueue--, route.totalTaxiFare -= route.taxiFare"
                   >
                     -
                   </button>
@@ -141,7 +141,10 @@
                 <td>
                   <button
                     :disabled="route.passangersQueue < route.numberOfPassengersInTaxi"
-                    @click="route.passangersQueue-=route.numberOfPassengersInTaxi, route.availableTaxisAtFirst--, totalMadeADay+=(route.taxiFare * route.numberOfPassengersInTaxi)"
+                    @click="route.passangersQueue-=route.numberOfPassengersInTaxi, route.availableTaxisAtFirst--, 
+                    totalMadeADay+=(route.taxiFare * route.numberOfPassengersInTaxi),
+                    route.totalTaxiFare = route.taxiFare * route.passangersQueue
+                    "
                   >
                     leave
                   </button>
@@ -153,7 +156,8 @@
                 <td>
                   <!-- <template x-if="route.passangersQueue < route.numberOfPassengersInTaxi"> -->
                     <span>R</span>
-                    <span x-text="(route.taxiFare * route.numberOfPassengersInTaxi).toFixed(2)">0.00</span>
+                    <!-- <span x-text="(route.taxiFare * route.numberOfPassengersInTaxi).toFixed(2)">0.00</span> -->
+                    <span x-text="route.totalTaxiFare"></span>
                   <!-- </template> -->
                 </td>
                 
