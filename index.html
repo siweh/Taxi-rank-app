@@ -40,7 +40,7 @@
               <input type="text" placeholder="Route name" x-model="routes.routeName" />
               <br />
               <input type="number" placeholder="Taxi fare" x-model="routes.taxiFare" />
-              <br />
+              <br>
               <button class="addBtn"
                 x-on:click="addRoute=!addRoute, routes.push({routeName: routes.routeName, taxiFare: routes.taxiFare, numberOfPassengersInTaxi: 0, passangersQueue: 0, numberOfPassengersInTaxi: 10, availableTaxisAtFirst: 3, totalTaxiFare: 0})"
                 :disabled="!routes.routeName || !routes.taxiFare || routes.taxiFare < 5"

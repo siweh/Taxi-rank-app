@@ -24,8 +24,6 @@ table, td, th {
 	text-align: center;
 }
 
-/* .tableRowsColor tr:nth-child(even){background-color: #f7d3d3;} */
-
 .add-route{
 	padding: 5px;
 	margin: 5px;
@@ -33,7 +31,3 @@ table, td, th {
 	background-color: #3fe290;
 	border-radius: 0.3em;
 }
-
-/* disabled{
-	background-color: red;
-} */
