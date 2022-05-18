@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./styles/style.css" />
     <link rel="stylesheet" href="./styles/simple-grid-min.css" />
-    <!-- <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script> -->
     <script
       src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.0/dist/alpine.min.js"
       defer
     ></script>
+    <script src="./app.js"></script>
     <style>
       [x-cloak]{
         display: none;
@@ -22,28 +22,28 @@
     <h2 style="text-align: center">
       <strong>Welcome to Johannesburg Taxi Rank</strong>
     </h2>
-    <!-- :disabled="!routes.routeName.length, !routes.taxiFare.length" -->
     <div
       class="container"
-      x-data="{addRoute: false, addRouteValues: false, leaveQueue: false, city: 'Johannesburg', trip: 'Chiawelo', priceOfTaxi: 13, totalMadeADay: 0, passangerInQueue: 0, passangerInTaxi: 5, numberOfTaxiAvailable: 3, totalFareOfTaxi: 0, routes: [] }"
+      x-data="{addRoute: false, addRouteValues: false, leaveQueue: false, city: 'Johannesburg', trip: 'Chiawelo', priceOfTaxi: 13, totalMadeADay: 0, passangerInQueue: 0, passangerInTaxi: 10, numberOfTaxiAvailable: 3, totalFareOfTaxi: 0, leftTaxis: 0, totalLeftTaxis: 0,  routes: JSON.parse(localStorage.getItem('routes')) }"
+      x-init="$watch('routes', (val) => localStorage.setItem('routes', JSON.stringify(val)))"
     >
       <div class="row">
         <div class="col-8">
           <h3>Total price made a day: R<span x-text="totalMadeADay.toFixed(2)"></span></h3>
         </div>
-        <div class="col-4">
+        <div class="col-4" x-cloak>
           <button class="add-route" @click="addRoute = ! addRoute">
             Add route
           </button>
-          <div x-show="addRoute">
+          <div x-show="addRoute" class="inputForm">
             <form x-on:submit.prevent>
               <input type="text" placeholder="Route name" x-model="routes.routeName" />
               <br />
-              <input type="number" placeholder="Taxi far" x-model="routes.taxiFare" />
+              <input type="number" placeholder="Taxi fare" x-model="routes.taxiFare" />
               <br />
-              <button
-                x-on:click="addRouteValues = ! addRouteValues, routes.push({routeName: routes.routeName, taxiFare: routes.taxiFare, numberOfPassengersInTaxi: 0, passangersQueue: 0, numberOfPassengersInTaxi: 10, availableTaxisAtFirst: 3, totalTaxiFare: 0})"
-                :disabled="!routes.routeName, !routes.taxiFare"
+              <button class="addBtn"
+                x-on:click="addRoute=!addRoute, routes.push({routeName: routes.routeName, taxiFare: routes.taxiFare, numberOfPassengersInTaxi: 0, passangersQueue: 0, numberOfPassengersInTaxi: 10, availableTaxisAtFirst: 3, totalTaxiFare: 0})"
+                :disabled="!routes.routeName || !routes.taxiFare || routes.taxiFare < 5"
               >
                 Add
               </button>
@@ -54,7 +54,7 @@
       <br />
       <div class="row">
         <div class="col-12">
-          <table>
+          <table class="tableRowsColor">
             <tr>
               <th>City</th>
               <th>Destination</th>
@@ -70,7 +70,7 @@
                 <td style="align-items: center">
                   <button
                     style="background-color: green; color: white"
-                    @click="passangerInQueue++, totalFareOfTaxi = priceOfTaxi * passangerInQueue"
+                    @click="passangerInQueue++"
                   >
                     +
                   </button>
@@ -81,23 +81,22 @@
                   >
                   <button
                     style="background-color: red; color: white"
-                    @click="passangerInQueue--,
-                    totalFareOfTaxi -= priceOfTaxi 
+                    @click="passangerInQueue--
                     "
                   >
                     -
                   </button>
                 </td>
                 <td>
-                  <button
-                    :disabled="passangerInQueue < passangerInTaxi"
-                    @click="passangerInQueue-=passangerInTaxi, numberOfTaxiAvailable--,
-                    totalMadeADay += (priceOfTaxi * passangerInTaxi),
-                    totalFareOfTaxi = priceOfTaxi * passangerInQueue
-                    "
-                  >
-                    leave
-                  </button>
+                    <button class="leaveBtn"
+                      :disabled="passangerInQueue < passangerInTaxi || numberOfTaxiAvailable < 1"
+                      @click="leaveQueue = ! leaveQueue, passangerInQueue-=passangerInTaxi, numberOfTaxiAvailable--,
+                      totalMadeADay += (priceOfTaxi * passangerInTaxi),
+                      totalFareOfTaxi += priceOfTaxi * passangerInTaxi
+                      "
+                    >
+                      leave
+                    </button>
                 </td>
                 <td>
                   <span>R</span>
@@ -105,19 +104,14 @@
                 </td>
                   <td>
                     <span>R</span>
-                     <!-- <template x-if="passangerInQueue > passangerInTaxi"> -->
-                      
                       <span x-text="totalFareOfTaxi.toFixed(2)"></span>
-                     <!-- </template> -->
                   </td>
-                
-                
                 <td>
                   <span x-text="numberOfTaxiAvailable"></span>
                 </td>
               </tr>
             <template x-for="route in routes">
-              <tr x-show="addRouteValues">
+              <tr>
                 <td>
                   <span x-text="city"></span>
                 </td>
@@ -127,29 +121,26 @@
                 <td style="align-items: center">
                   <button
                     style="background-color: green; color: white"
-                    @click="route.passangersQueue++, 
-                    route.totalTaxiFare = route.taxiFare * route.passangersQueue"
+                    @click="route.passangersQueue++"
                   >
                     +
                   </button>
-                  <span
-                    style="background-color: rgb(226, 223, 43)"
+                  <span style="background-color: rgb(226, 223, 43)"
                     x-text="route.passangersQueue"
-                    >0</span
-                  >
+                    >0</span>
                   <button
                     style="background-color: red; color: white"
-                    @click="route.passangersQueue--, route.totalTaxiFare -= route.taxiFare"
+                    @click="route.passangersQueue--"
                   >
                     -
                   </button>
                 </td>
                 <td>
                   <button
-                    :disabled="route.passangersQueue < route.numberOfPassengersInTaxi"
+                    :disabled="route.passangersQueue < route.numberOfPassengersInTaxi || route.availableTaxisAtFirst < 1"
                     @click="route.passangersQueue-=route.numberOfPassengersInTaxi, route.availableTaxisAtFirst--, 
                     totalMadeADay+=(route.taxiFare * route.numberOfPassengersInTaxi),
-                    route.totalTaxiFare = route.taxiFare * route.passangersQueue
+                    route.totalTaxiFare+=(route.taxiFare * route.numberOfPassengersInTaxi)
                     "
                   >
                     leave
@@ -160,11 +151,8 @@
                   <span x-text="route.taxiFare"></span>
                 </td>
                 <td>
-                  <!-- <template x-if="route.passangersQueue < route.numberOfPassengersInTaxi"> -->
                     <span>R</span>
-                    <!-- <span x-text="(route.taxiFare * route.numberOfPassengersInTaxi).toFixed(2)">0.00</span> -->
-                    <span x-text="route.totalTaxiFare"></span>
-                  <!-- </template> -->
+                    <span x-text="route.totalTaxiFare.toFixed(2)"></span>
                 </td>
                 
                 <td>
@@ -172,54 +160,6 @@
                 </td>
               </tr>
             </template>
-            <!-- <template x-for="route in routes">
-              <tr>
-                
-                <td>
-                  <span x-text="route.destination"></span>
-                </td>
-                <template x-if="!passangersQueue"> -->
-                  <!-- <td style="align-items: center">
-                    <button
-                      style="background-color: green; color: white"
-                      @click="route.destination.numberOfPassengersInTaxi++"
-                    >
-                      +
-                    </button>
-                    <span
-                      style="background-color: rgb(226, 223, 43)"
-                      x-text="route.numberOfPassengersInTaxi"
-                      >0</span
-                    >
-                    <button
-                      style="background-color: red; color: white"
-                      @click="route.numberOfPassengersInTaxi--"
-                    >
-                      -
-                    </button>
-                  </td> -->
-                <!-- </template> -->
-                <!-- <td>
-                  <button
-                    :disabled="firstPrice < 11"
-                    @click="firstPrice--, availableTaxisAtFirst--"
-                  >
-                    leave
-                  </button>
-                </td>
-                <td>
-                  <span>R</span>
-                  <span x-text="route.taxiPrice"></span>
-                </td>
-                <td>
-                  <span>R</span>
-                  <span x-text="route.taxiPrice.toFixed(2)">0.00</span>
-                </td>
-                <td>
-                  <span x-text="availableTaxisAtFirst"></span>
-                </td>
-              </tr>
-            </template> -->
           </table>
         </div>
       </div>

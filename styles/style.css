@@ -5,18 +5,26 @@ body {
 	color: white;
 }
 
+.leaveBtn{
+	border: 2px solid grey;
+}
+
 table, td, th {
 	border: 2px solid black;
+	padding: 6px;
+	border-radius: 0.3em;
   }
   
   th{
-	border: 2px solid red;
+	border: 3px solid rgb(240, 56, 56);
   }
   table {
 	border-collapse: collapse;
 	width: 100%;
 	text-align: center;
 }
+
+/* .tableRowsColor tr:nth-child(even){background-color: #f7d3d3;} */
 
 .add-route{
 	padding: 5px;
@@ -25,3 +33,7 @@ table, td, th {
 	background-color: #3fe290;
 	border-radius: 0.3em;
 }
+
+/* disabled{
+	background-color: red;
+} */
