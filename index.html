@@ -23,7 +23,7 @@
     </h2>
     <div
       class="container"
-      x-data="{addRoute: false, addRouteValues: false, leaveQueue: false, city: 'Johannesburg', trip: 'Chiawelo', priceOfTaxi: 13, totalMadeADay: 0, passangerInQueue: 0, passangerInTaxi: 10, numberOfTaxiAvailable: 3, totalFareOfTaxi: 0, leftTaxis: 0, totalLeftTaxis: 0,  routes: JSON.parse(localStorage.getItem('routes') || '[]') }"
+      x-data="{addRoute: false, addRouteValues: false, leaveQueue: false, city: 'Johannesburg', trip: 'Chiawelo', priceOfTaxi: 13, totalMadeADay: 0, passangerInQueue: 0, passangerInTaxi: 10, numberOfTaxiAvailable: 3, totalFareOfTaxi: 0, leftTaxis: 0, totalLeftTaxis: 0, success: '',  routes: JSON.parse(localStorage.getItem('routes') || '[]') }"
       x-init="$watch('routes', (val) => localStorage.setItem('routes', JSON.stringify(val)))"
     >
       <div class="row">
@@ -40,7 +40,7 @@
               <br />
               <input type="number" placeholder="Taxi fare" x-model="routes.taxiFare" />
               <br>
-              <button class="addBtn"
+              <button class="addBtn success"
                 x-on:click="addRoute=!addRoute, routes.push({routeName: routes.routeName, taxiFare: routes.taxiFare, numberOfPassengersInTaxi: 0, passangersQueue: 0, numberOfPassengersInTaxi: 10, availableTaxisAtFirst: 3, totalTaxiFare: 0})"
                 :disabled="!routes.routeName || !routes.taxiFare || routes.taxiFare < 5"
               >
@@ -51,6 +51,16 @@
         </div>
       </div>
       <br />
+      <div class="row">
+        <div class="col-12">
+          <h5 style="text-align: center;">The taxi leaves once it has 10 passangers full!</h5>
+        </div>
+      </div>
+      <!-- <div class="row">
+        <div class="col-12">
+          <span x-text="success"></span>
+        </div>
+      </div> -->
       <div class="row">
         <div class="col-12">
           <table class="tableRowsColor">
@@ -80,6 +90,7 @@
                   >
                   <button
                     style="background-color: red; color: white"
+                    :disabled="passangerInQueue <= 0"
                     @click="passangerInQueue--
                     "
                   >
@@ -129,6 +140,7 @@
                     >0</span>
                   <button
                     style="background-color: red; color: white"
+                    :disabled="route.passangersQueue <= 0"
                     @click="route.passangersQueue--"
                   >
                     -
